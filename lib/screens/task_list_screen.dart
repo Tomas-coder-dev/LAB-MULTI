@@ -23,22 +23,24 @@ class _TaskListScreenState extends State<TaskListScreen> {
   void _deleteTask(int originalIndex) {
     showCupertinoDialog(
       context: context,
-      builder: (_) => CupertinoAlertDialog(
+      builder: (modalContext) => CupertinoAlertDialog(
         title: const Text("Eliminar Tarea"),
         content: const Text("¿Estás seguro de que quieres eliminar esta tarea?"),
         actions: [
           CupertinoDialogAction(
             child: const Text("Cancelar"),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(modalContext).pop(),
           ),
           CupertinoDialogAction(
             isDestructiveAction: true,
             child: const Text("Eliminar"),
             onPressed: () {
-              setState(() {
-                globalTasks.removeAt(originalIndex);
-              });
-              Navigator.of(context).pop();
+              Navigator.of(modalContext).pop();
+              if (mounted) {
+                setState(() {
+                  globalTasks.removeAt(originalIndex);
+                });
+              }
             },
           ),
         ],
