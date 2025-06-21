@@ -10,13 +10,13 @@ class TaskListScreen extends StatefulWidget {
 
 class _TaskListScreenState extends State<TaskListScreen> {
   String _searchQuery = '';
-  
+
   List<Task> get filteredTasks {
     if (_searchQuery.isEmpty) {
       return globalTasks;
     }
     return globalTasks.where((task) =>
-        task.description.toLowerCase().contains(_searchQuery.toLowerCase())
+      task.description.toLowerCase().contains(_searchQuery.toLowerCase())
     ).toList();
   }
 
@@ -56,19 +56,23 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
   Color _getPriorityColor(DateTime taskDate) {
     final now = DateTime.now();
-    final difference = taskDate.difference(now).inDays;
-    
-    if (difference < 0) return const Color(0xFFE53E3E); // Vencida - Rojo
-    if (difference <= 1) return const Color(0xFFED8936); // Urgente - Naranja
+    final taskDay = DateTime(taskDate.year, taskDate.month, taskDate.day);
+    final today = DateTime(now.year, now.month, now.day);
+    final difference = taskDay.difference(today).inDays;
+
+    if (difference < 0) return const Color(0xFFE53E3E); // Pasada - Rojo
+    if (difference == 0 || difference == 1) return const Color(0xFFED8936); // Hoy/Mañana - Naranja
     if (difference <= 7) return const Color(0xFFECC94B); // Próxima - Amarillo
     return const Color(0xFF48BB78); // Normal - Verde
   }
 
   String _getPriorityText(DateTime taskDate) {
     final now = DateTime.now();
-    final difference = taskDate.difference(now).inDays;
-    
-    if (difference < 0) return 'Vencida';
+    final taskDay = DateTime(taskDate.year, taskDate.month, taskDate.day);
+    final today = DateTime(now.year, now.month, now.day);
+    final difference = taskDay.difference(today).inDays;
+
+    if (difference < 0) return 'Pasada';
     if (difference == 0) return 'Hoy';
     if (difference == 1) return 'Mañana';
     if (difference <= 7) return 'Esta semana';
@@ -76,15 +80,21 @@ class _TaskListScreenState extends State<TaskListScreen> {
   }
 
   int _getCompletedTasksCount() {
-    return globalTasks.where((task) => 
-      task.createdAt.isBefore(DateTime.now().subtract(const Duration(days: 1)))
-    ).length;
+    final today = DateTime.now();
+    return globalTasks.where((task) {
+      final taskDate = DateTime(task.createdAt.year, task.createdAt.month, task.createdAt.day);
+      final nowDate = DateTime(today.year, today.month, today.day);
+      return taskDate.isBefore(nowDate);
+    }).length;
   }
 
   int _getUpcomingTasksCount() {
-    return globalTasks.where((task) => 
-      task.createdAt.isAfter(DateTime.now())
-    ).length;
+    final today = DateTime.now();
+    return globalTasks.where((task) {
+      final taskDate = DateTime(task.createdAt.year, task.createdAt.month, task.createdAt.day);
+      final nowDate = DateTime(today.year, today.month, today.day);
+      return taskDate.isAfter(nowDate);
+    }).length;
   }
 
   @override
@@ -225,7 +235,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  
+
                   // Barra de búsqueda
                   Container(
                     decoration: BoxDecoration(
@@ -260,7 +270,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                 ],
               ),
             ),
-            
+
             // Lista de tareas
             Expanded(
               child: filteredTasks.isEmpty
@@ -312,7 +322,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                         final originalIndex = globalTasks.indexOf(task);
                         final priorityColor = _getPriorityColor(task.createdAt);
                         final priorityText = _getPriorityText(task.createdAt);
-                        
+
                         return Container(
                           margin: const EdgeInsets.only(bottom: 16),
                           decoration: BoxDecoration(

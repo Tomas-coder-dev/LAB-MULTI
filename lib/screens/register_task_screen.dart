@@ -88,7 +88,7 @@ class _RegisterTaskScreenState extends State<RegisterTaskScreen> {
   void _addTask() async {
     final text = _taskController.text.trim();
     if (text.isEmpty) {
-      _showAlert('Error', 'Por favor ingresa una descripción para la tarea.');
+      await _showAlert('Error', 'Por favor ingresa una descripción para la tarea.');
       return;
     }
 
@@ -105,19 +105,20 @@ class _RegisterTaskScreenState extends State<RegisterTaskScreen> {
     });
 
     // Mostrar confirmación
-    _showAlert('¡Éxito!', 'Tarea agregada correctamente');
+    await _showAlert('¡Éxito!', 'Tarea agregada correctamente');
   }
 
-  void _showAlert(String title, String message) {
-    showCupertinoDialog(
+  Future<void> _showAlert(String title, String message) async {
+    if (!mounted) return;
+    await showCupertinoDialog(
       context: context,
-      builder: (_) => CupertinoAlertDialog(
+      builder: (modalContext) => CupertinoAlertDialog(
         title: Text(title),
         content: Text(message),
         actions: [
           CupertinoDialogAction(
             child: const Text("OK"),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(modalContext).pop(),
           ),
         ],
       ),

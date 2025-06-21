@@ -5,7 +5,11 @@ class RegisterUserScreen extends StatefulWidget {
   final String username;
   final String password;
 
-  const RegisterUserScreen({super.key, required this.username, required this.password});
+  const RegisterUserScreen({
+    super.key,
+    required this.username,
+    required this.password,
+  });
 
   @override
   State<RegisterUserScreen> createState() => _RegisterUserScreenState();
@@ -242,7 +246,6 @@ class _RegisterUserScreenState extends State<RegisterUserScreen> {
                             ),
                           ),
                         ),
-                        // Puedes agregar un IconButton para mostrar/ocultar si lo deseas
                       ],
                     ),
                   ],
